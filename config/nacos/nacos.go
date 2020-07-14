@@ -1,10 +1,11 @@
 package nacos
 
 import (
-	"errors"
+	"os"
 	"time"
 
 	"github.com/micro/go-micro/v2/config/source"
+	"github.com/micro/go-micro/v2/config/source/file"
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/clients/nacos_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
@@ -12,9 +13,18 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 )
 
+var (
+	endpoint    = GetEnvDefault("CFG_ENDPOINT", "acm.aliyun.com")
+	namespaceID = GetEnvDefault("CFG_NAMESPACEID", "a0630038-0d1c-4002-8854-0c08c47fa3e3")
+	access      = GetEnvDefault("CFG_ACCESSKEY", "LTAI4FgL4Ew4kGTSEWQ8gSbo")
+	secret      = GetEnvDefault("CFG_SECRETKEY", "ZElyfnMQ4E4tE8QKJeXdZmgJ54Mgea")
+	data        = GetEnvDefault("CFG_DATA", "srv.user")
+	group       = GetEnvDefault("CFG_GROUP", "dev")
+)
+
 // nacos ...
 type nacos struct {
-	client config_client.ConfigClient
+	client config_client.IConfigClient
 	opts   source.Options
 	err    error
 }
@@ -25,13 +35,13 @@ func (n *nacos) Read() (*source.ChangeSet, error) {
 	}
 	dataID, ok := n.opts.Context.Value(dataIDKey{}).(string)
 	if !ok {
-		return nil, errors.New("accessKey not null")
+		dataID = data
 	}
-	group, ok := n.opts.Context.Value(groupKey{}).(string)
+	groupID, ok := n.opts.Context.Value(groupKey{}).(string)
 	if !ok {
-		return nil, errors.New("group not null")
+		groupID = group
 	}
-	content, err := n.client.GetConfig(vo.ConfigParam{DataId: dataID, Group: group})
+	content, err := n.client.GetConfig(vo.ConfigParam{DataId: dataID, Group: groupID})
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +55,23 @@ func (n *nacos) Read() (*source.ChangeSet, error) {
 	return cs, nil
 }
 
-func (n *nacos) Write(*source.ChangeSet) error {
-	return nil
+func (n *nacos) Write(cs *source.ChangeSet) error {
+	if n.err != nil {
+		return n.err
+	}
+	dataID, ok := n.opts.Context.Value(dataIDKey{}).(string)
+	if !ok {
+		dataID = data
+	}
+	groupID, ok := n.opts.Context.Value(groupKey{}).(string)
+	if !ok {
+		groupID = group
+	}
+	_, err := n.client.PublishConfig(vo.ConfigParam{
+		DataId:  dataID,
+		Group:   groupID,
+		Content: string(cs.Data)})
+	return err
 }
 
 func (n *nacos) String() string {
@@ -61,7 +86,16 @@ func (n *nacos) Watch() (source.Watcher, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newWatcher(n.client.Watcher, cs, n.opts)
+	return newWatcher(n.client, cs, n.opts)
+}
+
+// NewAutoSource ...
+func NewAutoSource(opts ...source.Option) source.Source {
+	ss := file.NewSource(opts...)
+	if _, err := ss.Read(); err != nil {
+		ss = NewSource(opts...)
+	}
+	return ss
 }
 
 // NewSource ...
@@ -69,25 +103,25 @@ func NewSource(opts ...source.Option) source.Source {
 	options := source.NewOptions(opts...)
 	endpointKey, ok := options.Context.Value(endpointKey{}).(string)
 	if !ok {
-		endpointKey = "acm.aliyun.com:8080"
+		endpointKey = endpoint
 	}
-	namespaceID, ok := options.Context.Value(namespaceIDKey{}).(string)
+	namespaceIDKey, ok := options.Context.Value(namespaceIDKey{}).(string)
 	if !ok {
-		panic("namespaceID not null")
+		namespaceIDKey = namespaceID
 	}
 	accessKey, ok := options.Context.Value(accessKey{}).(string)
 	if !ok {
-		panic("accessKey not null")
+		accessKey = access
 	}
 
 	secretKey, ok := options.Context.Value(secretKey{}).(string)
 	if !ok {
-		panic("secretKey not null")
+		secretKey = secret
 	}
 
 	clientConfig := constant.ClientConfig{
 		Endpoint:    endpointKey,
-		NamespaceId: namespaceID,
+		NamespaceId: namespaceIDKey,
 		AccessKey:   accessKey,
 		SecretKey:   secretKey,
 
@@ -112,8 +146,17 @@ func NewSource(opts ...source.Option) source.Source {
 	nc.SetHttpAgent(&http_agent.HttpAgent{})
 	c, err := config_client.NewConfigClient(&nc)
 	return &nacos{
-		client: c,
+		client: &c,
 		opts:   options,
 		err:    err,
 	}
+}
+
+// GetEnvDefault ...
+func GetEnvDefault(key, defVal string) string {
+	val, ex := os.LookupEnv(key)
+	if !ex {
+		return defVal
+	}
+	return val
 }

@@ -43,8 +43,8 @@ func WithAccountKey(a string) source.Option {
 	}
 }
 
-// WitchSecretKey ...
-func WitchSecretKey(s string) source.Option {
+// WithSecretKey ...
+func WithSecretKey(s string) source.Option {
 	return func(o *source.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
@@ -53,8 +53,8 @@ func WitchSecretKey(s string) source.Option {
 	}
 }
 
-// WitchDataIDKey ...
-func WitchDataIDKey(s string) source.Option {
+// WithDataIDKey ...
+func WithDataIDKey(s string) source.Option {
 	return func(o *source.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
@@ -63,8 +63,8 @@ func WitchDataIDKey(s string) source.Option {
 	}
 }
 
-// WitchGroupKey ...
-func WitchGroupKey(s string) source.Option {
+// WithGroupKey ...
+func WithGroupKey(s string) source.Option {
 	return func(o *source.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
