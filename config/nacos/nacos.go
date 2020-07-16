@@ -16,8 +16,8 @@ import (
 var (
 	endpoint    = GetEnvDefault("CFG_ENDPOINT", "acm.aliyun.com:8080")
 	namespaceID = GetEnvDefault("CFG_NAMESPACEID", "a0630038-0d1c-4002-8854-0c08c47fa3e3")
-	access      = GetEnvDefault("CFG_ACCESSKEY", "LTAI4FgL4Ew4kGTSEWQ8gSbo")
-	secret      = GetEnvDefault("CFG_SECRETKEY", "ZElyfnMQ4E4tE8QKJeXdZmgJ54Mgea")
+	access      = GetEnvDefault("CFG_ACCESSKEY", "")
+	secret      = GetEnvDefault("CFG_SECRETKEY", "")
 	data        = GetEnvDefault("CFG_DATA", "srv.user")
 	group       = GetEnvDefault("CFG_GROUP", "dev")
 )
