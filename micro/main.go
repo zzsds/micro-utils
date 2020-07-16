@@ -17,13 +17,13 @@ func init() {
 		plugin.WithName("trace"),
 		plugin.WithHandler(
 			tracer.JeagerWrapper,
-		)
+		),
 	)); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
-	
+
 	cmd.Init()
 }
