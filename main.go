@@ -18,12 +18,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	server := micro.NewService(
 		micro.Name("go.micro.srv.test"),
 		micro.Config(cfg),
 		micro.Tracer(memory.NewTracer()),
 	)
-	server.Init(micro.WrapHandler())
 	var cf struct {
 		Aliyun struct {
 			AccessKeyID string `json:"accessKeyId"`
@@ -38,7 +38,7 @@ func main() {
 
 	fmt.Println(string(server.Options().Config.Bytes()), server.Options().Config.Map(), cf)
 	server.Run()
-	// fmt.Println(cs.Format, string(cs.Data))
+	fmt.Println(cf)
 }
 
 type Hello struct {
