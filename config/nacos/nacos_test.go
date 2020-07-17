@@ -8,11 +8,12 @@ import (
 )
 
 var client = NewAutoSource(
+	// 默认使用文件
 	file.WithPath("config.toml"),
 	WithEndpoint("acm.aliyun.com:8080"),
-	WithNamespace("a0630038-0d1c-4002-8854-0c08c47fa3e3"),
-	WithAccountKey("LTAI4FgL4Ew4kGTSEWQ8gSbo"),
-	WithSecretKey("ZElyfnMQ4E4tE8QKJeXdZmgJ54Mgea"),
+	WithNamespace("werewsd-0d1c-4002-8854-0c08c47fa3e3"),
+	WithAccountKey("*"),
+	WithSecretKey("*"),
 	WithDataIDKey("srv.user"),
 	WithGroupKey("dev"))
 
@@ -28,14 +29,14 @@ func TestWrite(t *testing.T) {
 	err := client.Write(&source.ChangeSet{
 		Data: []byte(`{
 			"mysql": {
-				"name": "welfare_user",
+				"name": "test_user",
 				"user": "root",
-				"password": "password",
-				"host": "47.114.118.106:13336",
+				"password": "123456",
+				"host": "127.0.0.1:3336",
 				"debug": true
 			},
 			"jwt": {
-				"publicKey": "3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ=="
+				"publicKey": "123123213"
 			},
 			"setting": {
 				"distributional": 3,
@@ -52,6 +53,7 @@ func TestWrite(t *testing.T) {
 		t.Log(err)
 	}
 }
+
 func TestWatch(t *testing.T) {
 	w, err := client.Watch()
 	if err != nil {

@@ -1,0 +1,6 @@
+[aliyun]
+    endpoint = "http://oss-cn-hangzhou.aliyuncs.com"
+    accessKeyId = "*"
+    accessKeySecret = "*"
+    bucketName = "tests"
+    bucketHost = "http://test.oss-cn-hangzhou.aliyuncs.com"
