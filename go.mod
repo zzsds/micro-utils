@@ -7,7 +7,9 @@ require (
 	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/micro/go-micro/v2 v2.9.1
+	github.com/micro/go-plugins v1.2.0
 	github.com/micro/go-plugins/micro/cors/v2 v2.9.1
+	github.com/micro/micro v1.10.0
 	github.com/micro/micro/v2 v2.9.3
 	github.com/nacos-group/nacos-sdk-go v0.3.2
 	github.com/onsi/ginkgo v1.10.1 // indirect
