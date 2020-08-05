@@ -51,7 +51,9 @@ func NewValid(translator locales.Translator) *Valid {
 func (v *Valid) NameVar(name string, field interface{}, tag string) error {
 	err := v.Var(field, tag)
 	if err != nil {
-		err = fmt.Errorf("%s %s", name, err.Error())
+		for _, err := range err.(validator.ValidationErrors) {
+			return fmt.Errorf("%s %s", name, err.Translate(v.Translator))
+		}
 	}
 	return err
 }

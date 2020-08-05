@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-playground/locales"
+	"github.com/go-playground/locales/zh"
 )
 
 func TestNewValid(t *testing.T) {
@@ -41,6 +42,15 @@ func TestValid_NameVar(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			v:    NewValid(zh.New()),
+			name: "test",
+			args: args{
+				name:  "ID",
+				field: 0,
+				tag:   "required,gte=1",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
