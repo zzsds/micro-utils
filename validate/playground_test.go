@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -61,6 +62,12 @@ func TestValid_FirstError(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "test",
+			args: args{
+				fmt.Errorf("%s", "ID Key: '' Error:Field validation for '' failed on the 'required' tag"),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
